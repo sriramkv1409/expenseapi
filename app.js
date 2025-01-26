@@ -40,7 +40,7 @@ app.get('/api/expenses/:id',async(req,res)=>{
         const{id} = req.params;
         const expense = await Expense.findOne({id});
         if(!expense){
-            return res.status(404).json({message:"Expense not found"});
+            return res.status(404).json({message:"The id with the expense is not available"});
         }
         res.status(200).json(expense);
     }
