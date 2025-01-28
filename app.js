@@ -2,19 +2,17 @@ var express = require('express');
 const mongoose = require('mongoose');
 const {v4:uuidv4} = require('uuid');  //import uuid
 const cors = require('cors')
+const dotenv = require('dotenv')
+dotenv.config()
 const app = express();
 app.use(express.json()) // middleware between request and response;
 app.use(cors())
 
 
-try{
-mongoose.connect('mongodb+srv://sriramkv1409:sriramkv2005@cluster0.gbsuknc.mongodb.net/expensetracker').then(()=>{
-    console.log('connected to database');
-})
-}
-catch(err){
-    console.log("erefsfsdf ")
-}
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("Connected to database"))
+  .catch((err) => console.error("Error connecting to database:", err));
+
 
 const expenseSchema = new mongoose.Schema({
     id:{type:String,required:true,unique:true},
