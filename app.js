@@ -5,14 +5,24 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 dotenv.config()
 const app = express();
-app.use(express.json()) // middleware between request and response;
-app.use(cors())
 
+// Configure CORS to accept requests from any origin during development
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE', 'PUT'],
+    allowedHeaders: ['Content-Type']
+}));
+
+app.use(express.json()) // middleware between request and response;
+
+// Basic route to check if server is running
+app.get('/', (req, res) => {
+    res.json({ message: "Expense Tracker API is running" });
+});
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log("Connected to database"))
   .catch((err) => console.error("Error connecting to database:", err));
-
 
 const expenseSchema = new mongoose.Schema({
     id:{type:String,required:true,unique:true},
@@ -24,12 +34,12 @@ const Expense = mongoose.model("Expenses",expenseSchema);
 
 app.get('/api/expenses',async(req,res)=>{
     try{
-    const expenses =await Expense.find();
-    console.log(expenses);
-    res.status(200).json(expenses);
-    res.end();
+        const expenses = await Expense.find();
+        console.log("Fetched expenses:", expenses);
+        res.status(200).json(expenses);
     }catch(err){
-    console.log(err);
+        console.error("Error fetching expenses:", err);
+        res.status(500).json({ message: "Error fetching expenses", error: err.message });
     }
 })
 
@@ -81,10 +91,8 @@ app.put('/api/expenses/:id',async(req,res)=>{
 app.delete('/api/expenses/:id',async(req,res)=>{
     try{
         const {id} = req.params;
-        const {title,amount} = req.body;
         const deleteExpenses = await Expense.findOneAndDelete(
             {id},
-            {title,amount},
         )
         if(!deleteExpenses){
             return res.status(404).json({message:"Data not found"});
@@ -98,7 +106,7 @@ app.delete('/api/expenses/:id',async(req,res)=>{
     }
 })
 
-
-app.listen(3001,()=>{
-    console.log("The server is running in port 3001");
-})
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
