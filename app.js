@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
     res.json({ message: "Expense Tracker API is running" });
 });
 
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect('mongodb+srv://sriramkv1409:helloworld@cluster0.gbsuknc.mongodb.net/')
   .then(() => console.log("Connected to database"))
   .catch((err) => console.error("Error connecting to database:", err));
 
